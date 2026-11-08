@@ -146,3 +146,7 @@ unit 假设仓库在 `~/code/myproject/Claude_Remote`、Node 在 `~/.local/bin/n
 - 二维码只包含一次性配对码、WSS 地址和证书指纹；长期设备 token 由 `/pair` 换取，服务端只保存其哈希。
 - 权限桥 fail-closed：超时、断线、中断、daemon 重启都会拒绝；不提供 `bypassPermissions`。
 - `allowedRoots` 只是工作目录白名单，**不是文件系统沙箱**：Claude 仍可通过 Bash 访问其他路径，真正的硬隔离需要容器或 sandbox。
+
+## License
+
+[MIT](LICENSE)
