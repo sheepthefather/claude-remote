@@ -1,0 +1,28 @@
+node_modules/
+dist/
+.env
+*.local
+.DS_Store
+
+# daemon runtime data
+data/
+*.db
+*.db-shm
+*.db-wal
+audit.log
+attachments/
+
+# Flutter
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/build/
+app/android/build/
+app/android/app/build/
+app/android/.gradle/
+app/android/local.properties
+app/ios/Pods/
+app/macos/Pods/
+.idea/
+*.iml
+.vscode/

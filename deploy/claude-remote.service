@@ -1,0 +1,19 @@
+[Unit]
+Description=Claude Remote daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/code/myproject/Claude_Remote/daemon
+EnvironmentFile=-%h/.config/claude-remote/env
+ExecStart=%h/.local/bin/node %h/code/myproject/Claude_Remote/daemon/dist/index.js serve
+Restart=on-failure
+RestartSec=2
+KillMode=control-group
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

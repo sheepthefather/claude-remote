@@ -1,0 +1,3095 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Claude Remote</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+/* ------------------------------------------------------------------
+   Design plan
+   Color: soft stone paper, deep pine accent; amber = needs attention;
+          four pastel tints for quick actions; code surfaces stay near-black.
+   Type:  Instrument Sans (UI) / IBM Plex Mono (paths, commands, data).
+   Layout: home "work inbox" + left session drawer + full-screen chat;
+           full-bleed on phones, device frame on desktop.
+   ------------------------------------------------------------------ */
+
+:root {
+  color-scheme: light;
+  --bg: #e9ebe6;
+  --bg-dot: #d3d7ce;
+  --surface: #f8f9f5;
+  --surface-2: #f0f2ec;
+  --surface-3: #e4e7df;
+  --ink: #191c17;
+  --ink-2: #3f453c;
+  --muted: #71776b;
+  --line: #d7dad2;
+  --line-strong: #c1c6ba;
+  --accent: #2b6455;
+  --accent-ink: #f6fffb;
+  --accent-weak: #dbe8e2;
+  --warn: #8d5c16;
+  --warn-line: #e2cba6;
+  --warn-weak: #f5ead7;
+  --danger: #9b3b2c;
+  --danger-line: #e4c2ba;
+  --danger-weak: #f6e2dd;
+  --tint-green-bg: #dfece6;
+  --tint-green-ink: #2b6455;
+  --tint-amber-bg: #f5ead7;
+  --tint-amber-ink: #8d5c16;
+  --tint-blue-bg: #dfe8f2;
+  --tint-blue-ink: #355d86;
+  --tint-violet-bg: #e8e2f1;
+  --tint-violet-ink: #5b4a86;
+  --code-bg: #171a16;
+  --code-line: #2c312a;
+  --code-fg: #e4e8dd;
+  --code-muted: #8f978a;
+  --code-add: #8fc39c;
+  --code-del: #d99a8c;
+  --code-ok: #7fb08c;
+  --code-add-bg: rgba(80, 150, 100, 0.13);
+  --code-del-bg: rgba(165, 85, 65, 0.14);
+  --home-glow: #e3ebe4;
+  --shadow: 0 30px 70px -28px rgba(18, 24, 16, 0.55), 0 8px 24px -8px rgba(18, 24, 16, 0.18);
+  --soft-shadow: 0 1px 2px rgba(20, 30, 20, 0.04), 0 8px 22px -18px rgba(20, 30, 20, 0.28);
+  --float-shadow: 0 12px 32px -20px rgba(20, 30, 20, 0.38);
+  --scrim: rgba(12, 16, 11, 0.42);
+  --toast-shadow: 0 12px 28px -12px rgba(18, 24, 16, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #101310;
+    --bg-dot: #1d211c;
+    --surface: #171b16;
+    --surface-2: #1e231d;
+    --surface-3: #272d26;
+    --ink: #e9ece3;
+    --ink-2: #c3c9bd;
+    --muted: #929a8c;
+    --line: #2c322a;
+    --line-strong: #3c4338;
+    --accent: #75bfa9;
+    --accent-ink: #0d1713;
+    --accent-weak: #1d332c;
+    --warn: #d6a05b;
+    --warn-line: #4d3d26;
+    --warn-weak: #2a2419;
+    --danger: #e08a78;
+    --danger-line: #4e3029;
+    --danger-weak: #2d1f1c;
+    --tint-green-bg: #1b2e28;
+    --tint-green-ink: #8ecbb8;
+    --tint-amber-bg: #2c2418;
+    --tint-amber-ink: #d8a760;
+    --tint-blue-bg: #1b2733;
+    --tint-blue-ink: #8cb4da;
+    --tint-violet-bg: #251f31;
+    --tint-violet-ink: #b3a3d9;
+    --code-bg: #0b0d0a;
+    --code-line: #242922;
+    --code-fg: #dfe4d8;
+    --code-muted: #828a7d;
+    --code-add: #8fc39c;
+    --code-del: #d99a8c;
+    --code-ok: #8fc39c;
+    --code-add-bg: rgba(80, 150, 100, 0.16);
+    --code-del-bg: rgba(165, 85, 65, 0.17);
+    --home-glow: #15201a;
+    --shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+    --soft-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 22px -18px rgba(0, 0, 0, 0.6);
+    --float-shadow: 0 12px 32px -20px rgba(0, 0, 0, 0.8);
+    --scrim: rgba(0, 0, 0, 0.6);
+    --toast-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.8);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101310;
+  --bg-dot: #1d211c;
+  --surface: #171b16;
+  --surface-2: #1e231d;
+  --surface-3: #272d26;
+  --ink: #e9ece3;
+  --ink-2: #c3c9bd;
+  --muted: #929a8c;
+  --line: #2c322a;
+  --line-strong: #3c4338;
+  --accent: #75bfa9;
+  --accent-ink: #0d1713;
+  --accent-weak: #1d332c;
+  --warn: #d6a05b;
+  --warn-line: #4d3d26;
+  --warn-weak: #2a2419;
+  --danger: #e08a78;
+  --danger-line: #4e3029;
+  --danger-weak: #2d1f1c;
+  --tint-green-bg: #1b2e28;
+  --tint-green-ink: #8ecbb8;
+  --tint-amber-bg: #2c2418;
+  --tint-amber-ink: #d8a760;
+  --tint-blue-bg: #1b2733;
+  --tint-blue-ink: #8cb4da;
+  --tint-violet-bg: #251f31;
+  --tint-violet-ink: #b3a3d9;
+  --code-bg: #0b0d0a;
+  --code-line: #242922;
+  --code-fg: #dfe4d8;
+  --code-muted: #828a7d;
+  --code-add: #8fc39c;
+  --code-del: #d99a8c;
+  --code-ok: #8fc39c;
+  --code-add-bg: rgba(80, 150, 100, 0.16);
+  --code-del-bg: rgba(165, 85, 65, 0.17);
+  --home-glow: #15201a;
+  --shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  --soft-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 22px -18px rgba(0, 0, 0, 0.6);
+  --float-shadow: 0 12px 32px -20px rgba(0, 0, 0, 0.8);
+  --scrim: rgba(0, 0, 0, 0.6);
+  --toast-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.8);
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  background-image: radial-gradient(var(--bg-dot) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, textarea { font-family: inherit; }
+button { color: inherit; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-block: 22px 28px;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+}
+
+.page-top {
+  width: min(820px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.brand { display: flex; align-items: center; gap: 9px; }
+
+.brand-mark {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid; place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px; font-weight: 500; letter-spacing: -0.02em;
+}
+
+.brand-name { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+
+.brand-tag {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 2px 7px;
+}
+
+.top-actions { display: flex; align-items: center; gap: 10px; }
+.top-hint { font-size: 11px; color: var(--muted); }
+
+.theme-quick {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+
+/* ---------------- device frame ---------------- */
+
+.phone {
+  position: relative;
+  width: min(400px, 100%);
+  height: min(880px, calc(100dvh - 118px));
+  min-height: 620px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 42px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.statusbar {
+  flex: 0 0 46px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.island {
+  position: absolute;
+  left: 50%; top: 8px;
+  transform: translateX(-50%);
+  width: 92px; height: 26px;
+  border-radius: 99px;
+  background: #070907;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.sb-icons { display: flex; align-items: center; gap: 6px; color: var(--ink); }
+
+.app { position: relative; flex: 1; min-height: 0; }
+
+.view { position: absolute; inset: 0; display: flex; flex-direction: column; min-height: 0; }
+.view[hidden] { display: none !important; }
+
+/* ---------------- shared controls ---------------- */
+
+.round-btn {
+  flex: none;
+  width: 42px; height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  display: grid; place-items: center;
+  box-shadow: var(--soft-shadow);
+  cursor: pointer;
+}
+
+.round-btn:hover { border-color: var(--line-strong); }
+
+.icon-btn {
+  flex: none;
+  width: 36px; height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+
+.icon-btn:hover { background: var(--surface-2); }
+
+.dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; display: inline-block; }
+.dot.accent { color: var(--accent); }
+
+/* ---------------- home ---------------- */
+
+#view-home {
+  background:
+    radial-gradient(120% 48% at 50% 0%, var(--home-glow) 0%, transparent 68%),
+    linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+}
+
+.home-top {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px 6px;
+}
+
+.session-pill {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.session-pill strong { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+
+.session-pill span {
+  display: flex; align-items: center; gap: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+}
+
+.mode-pill {
+  flex: none;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 21px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.home-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 20px 18px;
+  scrollbar-width: thin;
+}
+
+.greeting { text-align: center; padding: 20px 0 4px; }
+
+.greeting h1 {
+  margin: 0;
+  font-size: 31px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.greeting p { margin: 7px 0 0; font-size: 14px; color: var(--muted); }
+
+.mode-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 14px 0 22px;
+}
+
+.scope-pill {
+  height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.quick-card {
+  min-width: 0;
+  min-height: 108px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.quick-card:hover { border-color: var(--line-strong); }
+.quick-card:active { transform: scale(0.985); }
+
+.quick-icon {
+  width: 34px; height: 34px;
+  border-radius: 11px;
+  display: grid; place-items: center;
+  margin-bottom: 2px;
+}
+
+.quick-icon.green { background: var(--tint-green-bg); color: var(--tint-green-ink); }
+.quick-icon.amber { background: var(--tint-amber-bg); color: var(--tint-amber-ink); }
+.quick-icon.blue { background: var(--tint-blue-bg); color: var(--tint-blue-ink); }
+.quick-icon.violet { background: var(--tint-violet-bg); color: var(--tint-violet-ink); }
+
+.quick-title-row { display: flex; align-items: center; gap: 6px; width: 100%; }
+.quick-title { flex: 1; min-width: 0; font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; }
+
+.quick-count {
+  flex: none;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: var(--ink);
+  color: var(--surface);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 500;
+  display: grid; place-items: center;
+}
+
+.quick-sub {
+  width: 100%;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-head {
+  display: flex; align-items: center; gap: 8px;
+  margin: 24px 2px 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-head .text-btn { margin-left: auto; }
+
+.text-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.recent-list { border-top: 1px solid var(--line); }
+
+.recent-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 2px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  text-align: left;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.recent-row:hover .recent-title { color: var(--accent); }
+
+.recent-main { flex: 1; min-width: 0; }
+.recent-title { font-size: 14px; font-weight: 550; transition: color 0.15s ease; }
+
+.recent-meta {
+  margin-top: 2px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-time { flex: none; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; color: var(--muted); }
+
+.tip-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 10px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 10.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tip-icon {
+  flex: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--tint-amber-bg);
+  color: var(--tint-amber-ink);
+  display: grid; place-items: center;
+  font-size: 10px;
+}
+
+.tip-row span:nth-child(2) { flex: 1; }
+
+.home-composer {
+  flex: none;
+  padding: 8px 14px 10px;
+}
+
+.composer-inner {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 6px 6px 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--float-shadow);
+}
+
+.composer-inner:focus-within { border-color: var(--line-strong); }
+
+#composerInput, #homeInput {
+  flex: 1;
+  min-width: 0;
+  max-height: 104px;
+  padding: 8px 2px;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+#composerInput::placeholder, #homeInput::placeholder { color: var(--muted); }
+
+.send-btn {
+  flex: none;
+  width: 36px; height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+
+.send-btn.stop { background: var(--danger); color: var(--danger-weak); }
+
+.home-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 0 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+/* ---------------- drawer ---------------- */
+
+.drawer-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 24;
+  background: var(--scrim);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.drawer-scrim.show { opacity: 1; }
+
+.drawer {
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  z-index: 25;
+  width: min(88%, 344px);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  border-radius: 0 26px 26px 0;
+  box-shadow: 18px 0 50px -30px rgba(0, 0, 0, 0.45);
+  transform: translateX(-104%);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.drawer.open { transform: translateX(0); }
+
+.drawer-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+}
+
+.drawer-brand { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 650; letter-spacing: -0.02em; }
+
+.drawer-close {
+  flex: none;
+  width: 34px; height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--muted);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+
+.drawer-new {
+  flex: none;
+  margin: 4px 16px 10px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-field {
+  flex: none;
+  margin: 0 16px 10px;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 21px;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+}
+
+.search-field input::placeholder { color: var(--muted); }
+
+.drawer-filter-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 18px 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.drawer-filter-head .more-btn {
+  margin-left: auto;
+  width: 26px; height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.chips {
+  flex: none;
+  display: flex;
+  gap: 6px;
+  padding: 4px 16px 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex: none;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 550;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip.active { background: var(--ink); color: var(--surface); }
+
+.chip-n {
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--line-strong);
+  color: var(--surface);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8.5px;
+  display: grid;
+  place-items: center;
+}
+
+.chip[data-filter="waiting"] .chip-n { background: var(--warn); color: var(--warn-weak); }
+.chip.active .chip-n { background: var(--accent); color: var(--accent-ink); }
+
+.drawer-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 10px 12px;
+  scrollbar-width: thin;
+}
+
+.date-label {
+  padding: 12px 8px 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.drawer-session {
+  width: 100%;
+  display: block;
+  padding: 10px 9px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  text-align: left;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.drawer-session:hover { background: var(--surface-2); }
+
+.ds-row1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.ds-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.ds-dot.waiting { background: var(--warn); }
+.ds-dot.running { background: var(--accent); }
+.ds-dot.cold { background: var(--line-strong); }
+
+.ds-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-time { flex: none; font-family: "IBM Plex Mono", monospace; font-size: 9px; color: var(--muted); }
+
+.unread-dot {
+  flex: none;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.ds-meta {
+  margin-top: 2px;
+  padding-left: 12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 14px;
+  border-top: 1px solid var(--line);
+}
+
+.device-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-2);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+}
+
+.device-icon {
+  flex: none;
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  background: var(--tint-blue-bg);
+  color: var(--tint-blue-ink);
+  display: grid; place-items: center;
+}
+
+.device-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.device-main strong { font-size: 12px; font-weight: 600; }
+.device-main span {
+  display: flex; align-items: center; gap: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---------------- chat ---------------- */
+
+.appbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 10px;
+}
+
+.appbar-main { flex: 1; min-width: 0; }
+
+.chat-title-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chat-title-btn h1 {
+  margin: 0;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title-chev { flex: none; color: var(--muted); }
+
+.chat-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.chat-sub > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.state-chip {
+  flex: none;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+}
+
+.state-chip.warn { background: var(--warn-weak); color: var(--warn); }
+.state-chip.run { background: var(--accent-weak); color: var(--accent); }
+.state-chip.cold { background: var(--surface-3); color: var(--muted); }
+
+.chat-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 16px 14px;
+  scrollbar-width: thin;
+}
+
+.msg-user {
+  align-self: flex-end;
+  max-width: 84%;
+  padding: 10px 13px;
+  border-radius: 16px 16px 4px 16px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.msg-user p { margin: 0; }
+
+.msg-claude { display: flex; align-items: flex-start; gap: 9px; }
+
+.avatar {
+  flex: 0 0 24px;
+  width: 24px; height: 24px;
+  margin-top: 1px;
+  border-radius: 8px;
+  background: var(--accent-weak);
+  color: var(--accent);
+  display: grid; place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.msg-body { flex: 1; min-width: 0; font-size: 14px; line-height: 1.62; }
+.msg-body p { margin: 0 0 9px; }
+.msg-body p:last-child { margin-bottom: 0; }
+
+.msg-body code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.92em;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0 4px;
+}
+
+.tool {
+  margin: 9px 0;
+  border: 1px solid var(--code-line);
+  border-radius: 12px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: "IBM Plex Mono", monospace;
+  overflow: hidden;
+}
+
+.tool-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer; user-select: none; }
+
+.tool-icon {
+  flex: none;
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  background: var(--code-line);
+  color: var(--code-fg);
+  display: grid; place-items: center;
+  font-size: 9px;
+}
+
+.tool-name { flex: none; font-size: 10.5px; font-weight: 500; color: var(--code-fg); }
+
+.tool-target {
+  flex: 1; min-width: 0;
+  font-size: 10px;
+  color: var(--code-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.tool-status { flex: none; font-size: 9px; color: var(--code-ok); }
+.chev { flex: none; color: var(--code-muted); transition: transform 0.18s ease; }
+.tool.open .chev { transform: rotate(180deg); }
+
+.tool-body {
+  display: none;
+  padding: 9px 11px;
+  border-top: 1px solid var(--code-line);
+  font-size: 10.5px;
+  line-height: 1.68;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.tool.open .tool-body { display: block; }
+.tool-body .ok { color: var(--code-ok); }
+.tool-body .muted { color: var(--code-muted); }
+
+.pending-card {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 10px;
+  padding: 10px 11px;
+  border: 1px solid var(--warn-line);
+  border-radius: 13px;
+  background: var(--warn-weak);
+}
+
+.pending-icon {
+  flex: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--warn);
+  color: var(--warn-weak);
+  display: grid; place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pending-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; font-size: 12px; }
+.pending-text strong { font-weight: 600; color: var(--ink); }
+.pending-text span { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; color: var(--warn); }
+
+.pending-btn {
+  flex: none;
+  border: 0;
+  border-radius: 9px;
+  padding: 6px 10px;
+  background: var(--warn);
+  color: var(--warn-weak);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pending-btn.accent { background: var(--accent); color: var(--accent-ink); }
+
+.system-row {
+  margin-top: 10px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.system-row.danger { background: var(--danger-weak); color: var(--danger); }
+
+.question-card {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 10px;
+  padding: 10px 11px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.q-icon {
+  flex: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent-weak);
+  color: var(--accent);
+  display: grid; place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.q-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; font-size: 12px; }
+.q-text strong { font-weight: 600; }
+.q-text span { font-size: 10.5px; color: var(--muted); }
+
+.run-meta {
+  align-self: flex-start;
+  padding-left: 33px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+}
+
+.empty-chat {
+  margin: auto 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-mark {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+  display: grid; place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 18px;
+}
+
+.empty-chat h2 { margin: 2px 0 0; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.empty-chat p { margin: 0; max-width: 30ch; font-size: 12px; line-height: 1.6; color: var(--muted); }
+.empty-chat code { font-family: "IBM Plex Mono", monospace; font-size: 0.92em; background: var(--surface-2); border-radius: 4px; padding: 0 3px; }
+
+.composer {
+  flex: 0 0 auto;
+  padding: 6px 14px 10px;
+  background: var(--surface);
+}
+
+.composer-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 8px 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- settings ---------------- */
+
+.settings-scroll { padding-bottom: 24px; }
+
+.settings-scroll .group-label:first-child { margin-top: 2px; }
+
+.group-label {
+  margin: 18px 4px 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.group {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 13px;
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+
+.row:last-child { border-bottom: 0; }
+.row.col { flex-direction: column; align-items: stretch; gap: 9px; }
+
+.row-label { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 500; }
+.row-sub { margin-top: 3px; font-size: 10.5px; font-weight: 400; color: var(--muted); line-height: 1.45; }
+.row-sub.mono { font-family: "IBM Plex Mono", monospace; font-size: 10px; }
+.row-label.danger { color: var(--danger); }
+
+.pill {
+  flex: none;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+}
+
+.pill.ok { background: var(--accent-weak); color: var(--accent); }
+
+.row-action {
+  flex: none;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.row-action.danger { color: var(--danger); border-color: var(--danger-line); }
+
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface-3);
+}
+
+.segmented button {
+  flex: 1;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.segmented button.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+}
+
+.stepper button {
+  width: 26px; height: 26px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.stepper button:hover { background: var(--surface-3); }
+
+.stepper span {
+  min-width: 52px;
+  text-align: center;
+  font-size: 10.5px;
+  color: var(--ink-2);
+}
+
+.switch {
+  flex: none;
+  position: relative;
+  width: 40px; height: 23px;
+  padding: 0;
+  border: 0;
+  border-radius: 99px;
+  background: var(--line-strong);
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 17px; height: 17px;
+  border-radius: 50%;
+  background: var(--surface);
+  transition: transform 0.18s ease;
+}
+
+.switch.on { background: var(--accent); }
+.switch.on::after { transform: translateX(17px); }
+
+.settings-foot {
+  margin: 20px 4px 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------------- sheets ---------------- */
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: var(--scrim);
+  backdrop-filter: blur(2px);
+}
+
+.sheet {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 31;
+  max-height: 88%;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  border-radius: 26px 26px 0 0;
+  background: var(--surface);
+  box-shadow: 0 -20px 50px -20px rgba(0, 0, 0, 0.45);
+  transform: translateY(16px);
+  opacity: 0;
+  transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease;
+}
+
+.sheet.show { transform: translateY(0); opacity: 1; }
+.sheet:focus { outline: none; }
+
+.grabber {
+  flex: none;
+  width: 36px; height: 4px;
+  margin: 0 auto 12px;
+  border-radius: 99px;
+  background: var(--line-strong);
+}
+
+.sheet-head { flex: none; display: flex; align-items: flex-start; gap: 11px; padding: 0 2px 12px; }
+
+.sheet-icon {
+  flex: none;
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  display: grid; place-items: center;
+  font-size: 15px;
+}
+
+.sheet-icon.warn { background: var(--warn-weak); color: var(--warn); }
+.sheet-icon.accent { background: var(--accent-weak); color: var(--accent); }
+
+.sheet-head h2 { margin: 0; font-size: 17px; letter-spacing: -0.01em; }
+.sheet-head p { margin: 2px 0 0; font-size: 11.5px; color: var(--muted); }
+
+.sheet-close {
+  margin-left: auto;
+  flex: none;
+  width: 30px; height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--muted);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+
+.sheet-body { overflow-y: auto; padding-bottom: 4px; scrollbar-width: thin; }
+
+.tool-summary { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+
+.tool-pill {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--accent-weak);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.mono-path {
+  min-width: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  color: var(--ink-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.risk-chip {
+  margin-left: auto;
+  flex: none;
+  padding: 3px 7px;
+  border: 1px solid var(--warn-line);
+  border-radius: 99px;
+  background: var(--warn-weak);
+  color: var(--warn);
+  font-size: 9.5px;
+}
+
+.diff {
+  border: 1px solid var(--code-line);
+  border-radius: 12px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  overflow: hidden;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.diff-head {
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--code-line);
+  font-size: 10px;
+  color: var(--code-muted);
+}
+
+.diff-body { padding: 6px 0; font-size: 10.5px; line-height: 1.7; overflow-x: auto; }
+.diff-line { display: flex; gap: 10px; padding: 0 11px; white-space: pre; }
+.diff-line .ln { flex: 0 0 18px; width: 18px; text-align: right; color: var(--code-muted); }
+.diff-line.add { background: var(--code-add-bg); color: var(--code-add); }
+.diff-line.del { background: var(--code-del-bg); color: var(--code-del); }
+
+.params-toggle {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 10.5px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.params-toggle:hover { color: var(--ink); }
+
+.perm-meta {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  margin-top: 12px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.countdown-track { height: 3px; margin-top: 6px; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
+#countdownFill { display: block; height: 100%; width: 100%; background: var(--warn); transition: width 1s linear; }
+
+.perm-note { margin: 12px 0 14px; font-size: 10px; line-height: 1.55; color: var(--muted); }
+
+.btn {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-secondary { background: var(--accent-weak); color: var(--accent); }
+.btn-ghost { background: var(--surface-2); color: var(--ink-2); }
+.btn-danger { background: transparent; border: 1px solid var(--danger-line); color: var(--danger); }
+.btn:hover { filter: brightness(1.03); }
+.btn:active { transform: translateY(1px); }
+
+.perm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.perm-actions .wide { grid-column: 1 / -1; }
+
+.options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-2);
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.option.selected { border-color: var(--accent); background: var(--accent-weak); }
+
+.radio {
+  flex: none;
+  width: 16px; height: 16px;
+  margin-top: 2px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+
+.option.selected .radio { border-color: var(--accent); }
+.option.selected .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+.option-main { flex: 1; min-width: 0; }
+.option-title { display: block; font-size: 13px; font-weight: 600; }
+.option-desc { display: block; margin-top: 2px; font-size: 10.5px; color: var(--muted); }
+
+.option-tag {
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: var(--accent-weak);
+  color: var(--accent);
+  font-size: 9px;
+}
+
+.other-field {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface-2);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.other-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+}
+
+.dir-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 8px; }
+
+.dir-option {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--ink);
+  text-align: left;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.dir-option.selected { border-color: var(--accent); background: var(--accent-weak); color: var(--accent); }
+.dir-option .radio { margin-top: 0; }
+
+/* ---------------- toast ---------------- */
+
+.toast {
+  position: absolute;
+  left: 50%; bottom: 88px;
+  z-index: 40;
+  max-width: 82%;
+  padding: 9px 14px;
+  border-radius: 99px;
+  background: var(--ink);
+  color: var(--surface);
+  box-shadow: var(--toast-shadow);
+  font-size: 11.5px;
+  font-weight: 550;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.page-foot {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* ---------------- responsive ---------------- */
+
+@media (max-width: 560px) {
+  .page { gap: 0; min-height: 100dvh; padding: 0; }
+  .page-top, .page-foot { display: none; }
+  .phone {
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .statusbar { display: none; }
+  .home-top { padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
+  .appbar { padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
+  .drawer-head { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
+  .home-composer { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+  .composer { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+  .drawer-foot { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .toast { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+</style>
+
+<div class="page">
+  <div class="page-top">
+    <div class="brand">
+      <span class="brand-mark">CR</span>
+      <span class="brand-name">Claude Remote</span>
+      <span class="brand-tag">UI 原型</span>
+    </div>
+    <div class="top-actions">
+      <span class="top-hint">点左上角汉堡打开会话抽屉，点卡片试试</span>
+      <button class="theme-quick" id="themeQuick" type="button" aria-label="切换主题"></button>
+    </div>
+  </div>
+
+  <div class="phone" id="phone">
+    <div class="statusbar">
+      <span>9:41</span>
+      <span class="island" aria-hidden="true"></span>
+      <span class="sb-icons" aria-hidden="true">
+        <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.5 3.5a9 9 0 0 1 12 0"/><path d="M3.8 6a5.6 5.6 0 0 1 7.4 0"/><circle cx="7.5" cy="9" r="1" fill="currentColor" stroke="none"/></svg>
+        <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="1" width="18" height="9" rx="2.5" stroke="currentColor" opacity="0.5"/><rect x="2.5" y="3" width="13" height="5" rx="1.2" fill="currentColor"/><path d="M20.5 4v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/></svg>
+      </span>
+    </div>
+
+    <div class="app">
+      <section class="view" id="view-home">
+        <header class="home-top">
+          <button class="round-btn" id="openDrawer" type="button" aria-label="打开会话列表">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h11M4 17h16"/></svg>
+          </button>
+
+          <button class="session-pill" id="homeNewPill" type="button">
+            <strong>新对话</strong>
+            <span><i class="dot accent"></i>本机 · 已连接</span>
+          </button>
+
+          <button class="mode-pill" id="homeModeBtn" type="button" aria-label="切换权限模式">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+            <span id="homeModeLabel">Manual</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </header>
+
+        <div class="home-scroll">
+          <div class="greeting">
+            <h1 id="greeting">晚上好</h1>
+            <p>今天想做点什么？</p>
+          </div>
+
+          <div class="mode-row">
+            <button class="scope-pill" id="homeScopeBtn" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+              工作区内修改
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <button class="scope-pill" id="homeBudgetBtn" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              $5 / 轮
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="quick-grid">
+            <button class="quick-card" id="quickPermission" data-action="permission" type="button">
+              <span class="quick-icon amber" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v4.5"/><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none"/></svg>
+              </span>
+              <span class="quick-title-row"><span class="quick-title">待确认</span><span class="quick-count" id="permissionCount">1</span></span>
+              <span class="quick-sub" id="permissionSub">Edit · src/db/pool.ts</span>
+            </button>
+
+            <button class="quick-card" id="quickRunning" data-session="billing" type="button">
+              <span class="quick-icon green" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+              </span>
+              <span class="quick-title-row"><span class="quick-title">运行中</span><span class="quick-count" id="runningCount">1</span></span>
+              <span class="quick-sub">Grep · 税率计算</span>
+            </button>
+
+            <button class="quick-card" data-session="login" type="button">
+              <span class="quick-icon blue" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+              </span>
+              <span class="quick-title-row"><span class="quick-title">继续上次</span></span>
+              <span class="quick-sub">修复登录超时 · 12:31</span>
+            </button>
+
+            <button class="quick-card" data-action="new" type="button">
+              <span class="quick-icon violet" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              </span>
+              <span class="quick-title-row"><span class="quick-title">新建会话</span></span>
+              <span class="quick-sub">选择工作目录</span>
+            </button>
+          </div>
+
+          <div class="section-head">
+            <span>最近</span>
+            <button class="text-btn" id="seeAll" type="button">全部 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+          <div class="recent-list">
+            <button class="recent-row" data-session="docs" type="button">
+              <div class="recent-main">
+                <div class="recent-title">补 API 文档</div>
+                <div class="recent-meta">~/code/docs · 进程已回收</div>
+              </div>
+              <span class="recent-time">2 小时前</span>
+            </button>
+            <button class="recent-row" data-session="infra" type="button">
+              <div class="recent-main">
+                <div class="recent-title">排查 CI 失败</div>
+                <div class="recent-meta">~/code/infra · 进程已回收</div>
+              </div>
+              <span class="recent-time">昨天</span>
+            </button>
+          </div>
+
+          <button class="tip-row" type="button" data-demo="tip">
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/></svg>
+            </span>
+            <span>长按抽屉里的会话，可以置顶、改名或归档</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <div class="home-composer">
+          <div class="composer-inner">
+            <button class="icon-btn" id="homeAttach" type="button" aria-label="新建会话或添加附件">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <textarea id="homeInput" rows="1" placeholder="给 Claude 发消息…"></textarea>
+            <button class="send-btn" id="homeSend" type="button" aria-label="发送">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </button>
+          </div>
+          <div class="home-status"><span class="dot accent"></span> 本机 · 3 个活跃会话 · 延迟 18 ms</div>
+        </div>
+      </section>
+
+      <section class="view" id="view-chat" hidden>
+        <header class="appbar">
+          <button class="icon-btn" id="backHome" type="button" aria-label="返回主页">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="appbar-main">
+            <button class="chat-title-btn" id="chatTitleBtn" type="button" aria-label="打开会话列表">
+              <h1 id="chatTitle">修复登录超时</h1>
+              <svg class="title-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="chat-sub">
+              <span id="chatCwd">~/code/login-service</span>
+              <span class="state-chip warn" id="chatState">等待确认</span>
+            </div>
+          </div>
+          <button class="icon-btn" id="chatMenu" type="button" aria-label="会话菜单">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+          </button>
+        </header>
+
+        <div class="chat-scroll" id="messages"></div>
+
+        <div class="composer">
+          <div class="composer-inner">
+            <button class="icon-btn" id="attachBtn" type="button" aria-label="添加附件" data-demo="attach">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <textarea id="composerInput" rows="1" placeholder="发消息…"></textarea>
+            <button class="send-btn" id="sendBtn" type="button" aria-label="发送">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </button>
+          </div>
+          <div class="composer-meta">
+            <span id="runStatus">等待确认 · Edit</span>
+            <span id="costLabel">$0.42 · 38.2k tokens</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-settings" hidden>
+        <header class="appbar">
+          <button class="icon-btn" id="backFromSettings" type="button" aria-label="返回">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="appbar-main"><h1 style="margin:0;font-size:21px;font-weight:650;letter-spacing:-.02em">设置</h1></div>
+        </header>
+
+        <div class="home-scroll settings-scroll">
+          <div class="group-label">连接</div>
+          <div class="group">
+            <div class="row">
+              <div class="row-label">
+                MacBook Pro · 192.168.1.23:8787
+                <div class="row-sub"><span class="conn-dot" style="display:inline-block;vertical-align:-1px;margin-right:5px"></span>WSS · 证书指纹已固定</div>
+              </div>
+              <span class="pill ok">已连接</span>
+            </div>
+            <div class="row">
+              <div class="row-label">
+                设备 token
+                <div class="row-sub mono">7f3a…c91e · 存于 Android Keystore</div>
+              </div>
+              <button class="row-action" type="button" data-demo="token">轮换</button>
+            </div>
+            <div class="row">
+              <div class="row-label">
+                重新配对
+                <div class="row-sub">扫描电脑终端里的二维码</div>
+              </div>
+              <button class="row-action" type="button" data-demo="pair">扫码</button>
+            </div>
+          </div>
+
+          <div class="group-label">权限</div>
+          <div class="group">
+            <div class="row col">
+              <div class="row-label">
+                默认权限模式
+                <div class="row-sub">不提供 Bypass permissions</div>
+              </div>
+              <div class="segmented" id="modeSeg">
+                <button class="active" type="button">Manual</button>
+                <button type="button">Plan</button>
+              </div>
+            </div>
+            <div class="row col">
+              <div class="row-label">
+                权限确认超时
+                <div class="row-sub">超时后 fail-closed，自动拒绝</div>
+              </div>
+              <div class="stepper" data-stepper data-value="5" data-min="1" data-max="30" data-step="1" data-suffix=" 分钟">
+                <button type="button" data-dir="-1" aria-label="减少">−</button>
+                <span data-value-label>5 分钟</span>
+                <button type="button" data-dir="1" aria-label="增加">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="group-label">运行限制</div>
+          <div class="group">
+            <div class="row">
+              <div class="row-label">单轮最大轮数</div>
+              <div class="stepper" data-stepper data-value="40" data-min="10" data-max="100" data-step="10">
+                <button type="button" data-dir="-1" aria-label="减少">−</button>
+                <span data-value-label>40</span>
+                <button type="button" data-dir="1" aria-label="增加">+</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-label">
+                单轮预算上限
+                <div class="row-sub">超过后暂停，等你确认</div>
+              </div>
+              <div class="stepper" data-stepper data-value="5" data-min="1" data-max="20" data-step="1" data-prefix="$" data-decimals="2">
+                <button type="button" data-dir="-1" aria-label="减少">−</button>
+                <span data-value-label>$5.00</span>
+                <button type="button" data-dir="1" aria-label="增加">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="group-label">通知与外观</div>
+          <div class="group">
+            <div class="row">
+              <div class="row-label">
+                等待确认时通知
+                <div class="row-sub">App 在后台或锁屏时</div>
+              </div>
+              <button class="switch on" type="button" role="switch" aria-checked="true" aria-pressed="true" aria-label="等待确认时通知"></button>
+            </div>
+            <div class="row">
+              <div class="row-label">任务完成时通知</div>
+              <button class="switch on" type="button" role="switch" aria-checked="true" aria-pressed="true" aria-label="任务完成时通知"></button>
+            </div>
+            <div class="row col">
+              <div class="row-label">主题</div>
+              <div class="segmented" id="themeSeg">
+                <button type="button" data-theme-mode="system">跟随系统</button>
+                <button type="button" data-theme-mode="light">浅色</button>
+                <button type="button" data-theme-mode="dark">深色</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="group-label">安全</div>
+          <div class="group">
+            <div class="row">
+              <div class="row-label">
+                审计日志
+                <div class="row-sub">每次权限决策都有记录</div>
+              </div>
+              <button class="row-action" type="button" data-demo="audit">查看</button>
+            </div>
+            <div class="row">
+              <div class="row-label danger">
+                撤销本设备
+                <div class="row-sub">立即断开并删除本地 token</div>
+              </div>
+              <button class="row-action danger" type="button" data-demo="revoke">撤销</button>
+            </div>
+          </div>
+
+          <p class="settings-foot">Claude Remote 0.1 · 协议 v1</p>
+        </div>
+      </section>
+
+      <div class="drawer-scrim" id="drawerScrim" hidden></div>
+
+      <aside class="drawer" id="drawer" aria-label="会话列表" hidden>
+        <div class="drawer-head">
+          <div class="drawer-brand">
+            <span class="brand-mark">CR</span>
+            Claude Remote
+          </div>
+          <button class="drawer-close" id="closeDrawer" type="button" aria-label="关闭会话列表">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+
+        <button class="drawer-new" id="drawerNewChat" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          新对话
+        </button>
+
+        <label class="search-field">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="sessionSearch" type="search" placeholder="搜索会话" autocomplete="off">
+        </label>
+
+        <div class="drawer-filter-head">
+          <span>全部对话</span>
+          <button class="more-btn" type="button" data-demo="more" aria-label="更多">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+          </button>
+        </div>
+
+        <div class="chips" id="filterChips">
+          <button class="chip active" type="button" data-filter="all">全部</button>
+          <button class="chip" type="button" data-filter="running">运行中 <span class="chip-n">1</span></button>
+          <button class="chip" type="button" data-filter="waiting">待确认 <span class="chip-n">1</span></button>
+          <button class="chip" type="button" data-filter="unread">未读 <span class="chip-n">2</span></button>
+        </div>
+
+        <div class="drawer-list" id="drawerList">
+          <div class="date-label">今天</div>
+          <button class="drawer-session" type="button" data-session="login" data-state="waiting" data-unread="true" data-search="修复登录超时 ~/code/login-service pool">
+            <div class="ds-row1">
+              <span class="ds-dot waiting"></span>
+              <span class="ds-title">修复登录超时</span>
+              <span class="unread-dot"></span>
+              <span class="ds-time">12:31</span>
+            </div>
+            <div class="ds-meta">~/code/login-service · Edit src/db/pool.ts</div>
+          </button>
+
+          <button class="drawer-session" type="button" data-session="billing" data-state="running" data-unread="false" data-search="重构计费模块 ~/code/billing 税率">
+            <div class="ds-row1">
+              <span class="ds-dot running"></span>
+              <span class="ds-title">重构计费模块</span>
+              <span class="ds-time">11:58</span>
+            </div>
+            <div class="ds-meta">~/code/billing · Grep 税率计算</div>
+          </button>
+
+          <button class="drawer-session" type="button" data-session="docs" data-state="cold" data-unread="true" data-search="补 API 文档 ~/code/docs">
+            <div class="ds-row1">
+              <span class="ds-dot cold"></span>
+              <span class="ds-title">补 API 文档</span>
+              <span class="unread-dot"></span>
+              <span class="ds-time">09:12</span>
+            </div>
+            <div class="ds-meta">~/code/docs · 进程已回收</div>
+          </button>
+
+          <div class="date-label">昨天</div>
+          <button class="drawer-session" type="button" data-session="infra" data-state="cold" data-unread="false" data-search="排查 CI 失败 ~/code/infra">
+            <div class="ds-row1">
+              <span class="ds-dot cold"></span>
+              <span class="ds-title">排查 CI 失败</span>
+              <span class="ds-time">18:40</span>
+            </div>
+            <div class="ds-meta">~/code/infra · 进程已回收</div>
+          </button>
+
+          <button class="drawer-session" type="button" data-session="api" data-state="cold" data-unread="false" data-search="登录接口重构 ~/code/login-service">
+            <div class="ds-row1">
+              <span class="ds-dot cold"></span>
+              <span class="ds-title">登录接口重构</span>
+              <span class="ds-time">14:05</span>
+            </div>
+            <div class="ds-meta">~/code/login-service · 进程已回收</div>
+          </button>
+
+          <div class="date-label">更早</div>
+          <button class="drawer-session" type="button" data-session="init" data-state="cold" data-unread="false" data-search="初始化项目骨架 ~/code/console">
+            <div class="ds-row1">
+              <span class="ds-dot cold"></span>
+              <span class="ds-title">初始化项目骨架</span>
+              <span class="ds-time">周一</span>
+            </div>
+            <div class="ds-meta">~/code/console · 进程已回收</div>
+          </button>
+        </div>
+
+        <div class="drawer-foot">
+          <button class="device-card" type="button" data-demo="device">
+            <span class="device-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+            </span>
+            <span class="device-main">
+              <strong>本机</strong>
+              <span><i class="dot accent"></i>已连接 · 3 个活跃</span>
+            </span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <button class="round-btn" id="drawerSettings" type="button" aria-label="设置">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scrim" id="scrim" hidden></div>
+
+    <div class="sheet" id="sheetPermission" role="dialog" aria-modal="true" aria-labelledby="permTitle" hidden>
+      <div class="grabber"></div>
+      <div class="sheet-head">
+        <span class="sheet-icon warn" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v4.5"/><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <div>
+          <h2 id="permTitle">需要你确认</h2>
+          <p>Claude 想修改一个文件</p>
+        </div>
+        <button class="sheet-close" type="button" data-close aria-label="关闭">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="tool-summary">
+          <span class="tool-pill">Edit</span>
+          <span class="mono-path">src/db/pool.ts</span>
+          <span class="risk-chip">修改工作区</span>
+        </div>
+
+        <div class="diff">
+          <div class="diff-head">src/db/pool.ts · 1 处修改</div>
+          <div class="diff-body">
+            <div class="diff-line"><span class="ln">11</span><span>export const pool = new Pool({</span></div>
+            <div class="diff-line"><span class="ln">12</span><span>  connectionString: env.DATABASE_URL,</span></div>
+            <div class="diff-line del"><span class="ln">13</span><span>- max: 5,</span></div>
+            <div class="diff-line add"><span class="ln">13</span><span>+ max: 20,</span></div>
+            <div class="diff-line"><span class="ln">14</span><span>  idleTimeoutMillis: 30_000,</span></div>
+            <div class="diff-line"><span class="ln">15</span><span>});</span></div>
+          </div>
+        </div>
+
+        <button class="params-toggle" type="button" data-demo="params">查看完整参数与权限来源</button>
+
+        <div class="perm-meta">
+          <span>来源：修复登录超时 · 12:31</span>
+          <span class="mono" id="countdown">04:58</span>
+        </div>
+        <div class="countdown-track"><span id="countdownFill"></span></div>
+
+        <p class="perm-note">“本会话总是允许”只对当前会话生效，不写入项目配置。高风险操作不会提供这个选项。</p>
+
+        <div class="perm-actions">
+          <button class="btn btn-danger" type="button" data-decision="deny">拒绝</button>
+          <button class="btn btn-secondary" type="button" data-decision="allow_once">允许一次</button>
+          <button class="btn btn-primary wide" type="button" data-decision="allow_session">本会话总是允许</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet" id="sheetQuestion" role="dialog" aria-modal="true" aria-labelledby="questionTitle" hidden>
+      <div class="grabber"></div>
+      <div class="sheet-head">
+        <span class="sheet-icon accent" aria-hidden="true">?</span>
+        <div>
+          <h2 id="questionTitle">Claude 想确认一下</h2>
+          <p>选择题 · 不回答会暂停当前步骤</p>
+        </div>
+        <button class="sheet-close" type="button" data-close aria-label="关闭">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="sheet-body">
+        <p style="margin:0 0 11px;font-size:14px;line-height:1.55">税率默认值放在哪里？</p>
+
+        <div class="options" id="questionOptions">
+          <button class="option selected" type="button" data-value="环境变量 TAX_RATE">
+            <span class="radio"></span>
+            <span class="option-main">
+              <span class="option-title">环境变量 TAX_RATE</span>
+              <span class="option-desc">部署时可调，代码里只留默认值</span>
+            </span>
+            <span class="option-tag">推荐</span>
+          </button>
+          <button class="option" type="button" data-value="billing.config.ts">
+            <span class="radio"></span>
+            <span class="option-main">
+              <span class="option-title">billing.config.ts</span>
+              <span class="option-desc">跟代码一起评审，改动会进 diff</span>
+            </span>
+          </button>
+          <button class="option" type="button" data-value="直接写成常量">
+            <span class="radio"></span>
+            <span class="option-main">
+              <span class="option-title">直接写成常量</span>
+              <span class="option-desc">改动最小，只影响当前服务</span>
+            </span>
+          </button>
+        </div>
+
+        <label class="other-field">
+          <span>其他</span>
+          <input id="questionOther" type="text" placeholder="输入自己的答案…">
+        </label>
+
+        <button class="btn btn-primary" id="answerQuestion" type="button" style="width:100%">提交回答</button>
+      </div>
+    </div>
+
+    <div class="sheet" id="sheetNewSession" role="dialog" aria-modal="true" aria-labelledby="newTitle" hidden>
+      <div class="grabber"></div>
+      <div class="sheet-head">
+        <span class="sheet-icon accent" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <div>
+          <h2 id="newTitle">新建会话</h2>
+          <p>选择一个工作目录</p>
+        </div>
+        <button class="sheet-close" type="button" data-close aria-label="关闭">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="dir-list" id="dirList">
+          <button class="dir-option selected" type="button" data-dir="~/code/login-service"><span class="radio"></span>~/code/login-service</button>
+          <button class="dir-option" type="button" data-dir="~/code/billing"><span class="radio"></span>~/code/billing</button>
+          <button class="dir-option" type="button" data-dir="~/code/docs"><span class="radio"></span>~/code/docs</button>
+          <button class="dir-option" type="button" data-dir="~/code/infra"><span class="radio"></span>~/code/infra</button>
+        </div>
+        <p class="perm-note">daemon 只允许配置里的工作目录。手机端不能指定任意路径。</p>
+        <button class="btn btn-primary" id="createSession" type="button" style="width:100%">创建会话</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+  </div>
+
+  <p class="page-foot">Claude Remote · 局域网远程操控 Claude Code · 可点击原型</p>
+</div>
+
+<template id="tpl-login">
+  <div class="msg-user"><p>登录接口在并发 50 的时候会超时。先跑一下测试看看。</p></div>
+
+  <div class="msg-claude">
+    <span class="avatar">C</span>
+    <div class="msg-body">
+      <p>我先看一下登录相关代码，然后跑测试。</p>
+
+      <div class="tool">
+        <div class="tool-head">
+          <span class="tool-icon">$</span>
+          <span class="tool-name">Bash</span>
+          <span class="tool-target">npm test -- --runInBand login</span>
+          <span class="tool-status">完成</span>
+          <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="tool-body">PASS test/login.test.ts
+  <span class="ok">✓</span> rejects expired session (12 ms)
+  <span class="ok">✓</span> refreshes token before expiry (8 ms)
+  <span class="ok">✓</span> handles concurrent refresh (31 ms)
+
+Tests: <span class="ok">12 passed</span>, 12 total
+Time:  2.418 s</div>
+      </div>
+
+      <p>测试全过，问题更像是连接池太小。我准备把 pool size 从 5 调到 20，再补一个并发用例。</p>
+
+      <div class="pending-card" id="pendingBanner">
+        <span class="pending-icon">!</span>
+        <span class="pending-text"><strong>1 个操作等待确认</strong><span>Edit · src/db/pool.ts</span></span>
+        <button class="pending-btn" id="openPermission" type="button">查看</button>
+      </div>
+
+      <div class="system-row" id="decisionRow" hidden></div>
+    </div>
+  </div>
+
+  <div class="run-meta">本会话 $0.42 · 38.2k tokens · 8 轮</div>
+</template>
+
+<template id="tpl-billing">
+  <div class="msg-user"><p>把计费模块里重复的税率计算抽出来。</p></div>
+
+  <div class="msg-claude">
+    <span class="avatar">C</span>
+    <div class="msg-body">
+      <p>我先搜一下税率计算出现的位置。</p>
+
+      <div class="tool open">
+        <div class="tool-head">
+          <span class="tool-icon">⌕</span>
+          <span class="tool-name">Grep</span>
+          <span class="tool-target">calculateTax · src/</span>
+          <span class="tool-status">3 处</span>
+          <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="tool-body">src/billing/invoice.ts:42
+src/billing/subscription.ts:88
+src/billing/refund.ts:31</div>
+      </div>
+
+      <p>三处逻辑一致，但入参不同。抽成 <code>calcTax()</code> 之前想确认默认值放在哪里。</p>
+
+      <div class="question-card" id="questionCard">
+        <span class="q-icon">?</span>
+        <span class="q-text"><strong>Claude 想确认一下</strong><span>税率默认值放在哪里？</span></span>
+        <button class="pending-btn accent" id="openQuestion" type="button">回答</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="run-meta">正在运行 · Grep · $0.18</div>
+</template>
+
+<template id="tpl-cold">
+  <div class="empty-chat">
+    <div class="empty-mark">◌</div>
+    <h2>冷会话</h2>
+    <p>进程已回收以节省内存。发送一条消息，daemon 会用 <code>resume</code> 恢复这段对话。</p>
+  </div>
+</template>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+
+  var rootEl = document.documentElement;
+  var phone = $("#phone");
+  var messages = $("#messages");
+  var scrim = $("#scrim");
+  var drawer = $("#drawer");
+  var drawerScrim = $("#drawerScrim");
+  var toastEl = $("#toast");
+  var drawerList = $("#drawerList");
+  var searchInput = $("#sessionSearch");
+
+  var templates = {
+    login: $("#tpl-login"),
+    billing: $("#tpl-billing"),
+    cold: $("#tpl-cold")
+  };
+
+  var sessions = {
+    login: { title: "修复登录超时", cwd: "~/code/login-service", chip: "等待确认", chipClass: "warn", template: "login", pending: true, allowed: false, cost: "$0.42 · 38.2k tokens", html: "" },
+    billing: { title: "重构计费模块", cwd: "~/code/billing", chip: "运行中", chipClass: "run", template: "billing", pending: false, allowed: false, cost: "$0.18 · 12.4k tokens", html: "" },
+    docs: { title: "补 API 文档", cwd: "~/code/docs", chip: "冷会话", chipClass: "cold", template: "cold", pending: false, allowed: false, cost: "$0.06 · 4.1k tokens", html: "" },
+    infra: { title: "排查 CI 失败", cwd: "~/code/infra", chip: "冷会话", chipClass: "cold", template: "cold", pending: false, allowed: false, cost: "$0.11 · 8.7k tokens", html: "" },
+    api: { title: "登录接口重构", cwd: "~/code/login-service", chip: "冷会话", chipClass: "cold", template: "cold", pending: false, allowed: false, cost: "$0.09 · 6.2k tokens", html: "" },
+    init: { title: "初始化项目骨架", cwd: "~/code/console", chip: "冷会话", chipClass: "cold", template: "cold", pending: false, allowed: false, cost: "$0.03 · 1.8k tokens", html: "" },
+    fresh: { title: "新会话", cwd: "~/code/login-service", chip: "空闲", chipClass: "cold", template: "cold", pending: false, allowed: false, cost: "$0.00 · 0 tokens", html: "" }
+  };
+
+  Object.keys(sessions).forEach(function (id) {
+    sessions[id].html = templates[sessions[id].template].innerHTML;
+  });
+
+  var current = "login";
+  var permissionRemaining = 298;
+  var permissionTimer = null;
+  var streamingTimers = [];
+  var activeSheet = null;
+  var drawerTimer = null;
+  var toastTimer = null;
+  var currentFilter = "all";
+  var homeMode = "Manual";
+
+  var icons = {
+    send: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+    stop: '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>',
+    moon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>',
+    sun: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+  };
+
+  /* ---------------- theme ---------------- */
+
+  function readStoredTheme() {
+    try { return localStorage.getItem("cr-theme-v2") || "light"; } catch (e) { return "light"; }
+  }
+
+  function setTheme(mode) {
+    try { localStorage.setItem("cr-theme-v2", mode); } catch (e) {}
+    if (mode === "system") rootEl.removeAttribute("data-theme");
+    else rootEl.setAttribute("data-theme", mode);
+    updateThemeUI();
+  }
+
+  function systemDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  function effectiveDark() {
+    var attr = rootEl.getAttribute("data-theme");
+    if (attr) return attr === "dark";
+    return systemDark();
+  }
+
+  function updateThemeUI() {
+    var mode = rootEl.getAttribute("data-theme") || "system";
+    $$("#themeSeg button").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-theme-mode") === mode);
+    });
+    var quick = $("#themeQuick");
+    if (quick) {
+      quick.innerHTML = effectiveDark() ? icons.sun : icons.moon;
+      quick.setAttribute("aria-label", effectiveDark() ? "切换到浅色主题" : "切换到深色主题");
+    }
+  }
+
+  var initialTheme = readStoredTheme();
+  if (initialTheme === "system") rootEl.removeAttribute("data-theme");
+  else rootEl.setAttribute("data-theme", initialTheme);
+  updateThemeUI();
+
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", updateThemeUI);
+  }
+
+  /* ---------------- helpers ---------------- */
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    requestAnimationFrame(function () { toastEl.classList.add("show"); });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove("show");
+      setTimeout(function () { toastEl.hidden = true; }, 220);
+    }, 2300);
+  }
+
+  function scrollBottom() { messages.scrollTop = messages.scrollHeight; }
+
+  function reducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function (ch) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch];
+    });
+  }
+
+  function saveCurrent() {
+    if (current && sessions[current]) sessions[current].html = messages.innerHTML;
+  }
+
+  function setGreeting() {
+    var h = new Date().getHours();
+    var text = h < 6 ? "夜深了" : h < 12 ? "早上好" : h < 18 ? "下午好" : "晚上好";
+    var el = $("#greeting");
+    if (el) el.textContent = text;
+  }
+
+  /* ---------------- views ---------------- */
+
+  function showView(name) {
+    $("#view-home").hidden = name !== "home";
+    $("#view-chat").hidden = name !== "chat";
+    $("#view-settings").hidden = name !== "settings";
+    if (name === "home") {
+      setGreeting();
+      updateHomeStats();
+    }
+  }
+
+  function setComposerRunning(running) {
+    var btn = $("#sendBtn");
+    if (!btn) return;
+    btn.dataset.mode = running ? "stop" : "send";
+    btn.classList.toggle("stop", running);
+    btn.innerHTML = running ? icons.stop : icons.send;
+    btn.setAttribute("aria-label", running ? "停止" : "发送");
+  }
+
+  function openSession(id) {
+    var s = sessions[id];
+    if (!s) return;
+
+    closeDrawer();
+    current = id;
+    markRead(id);
+
+    $("#chatTitle").textContent = s.title;
+    $("#chatCwd").textContent = s.cwd;
+
+    var chip = $("#chatState");
+    chip.textContent = s.chip;
+    chip.className = "state-chip " + s.chipClass;
+
+    messages.innerHTML = s.html;
+    if (id === "fresh") {
+      var h = messages.querySelector(".empty-chat h2");
+      var p = messages.querySelector(".empty-chat p");
+      if (h) h.textContent = "新会话";
+      if (p) p.textContent = "发送第一条消息，daemon 会在当前工作目录启动一个 Claude Code 子进程。";
+    }
+
+    $("#costLabel").textContent = s.cost;
+    $("#runStatus").textContent = s.chip === "等待确认" ? "等待确认 · Edit" : (s.chip === "运行中" ? "运行中 · Grep" : "空闲");
+    setComposerRunning(false);
+
+    showView("chat");
+    messages.scrollTop = messages.scrollHeight;
+
+    if (s.pending) {
+      setTimeout(function () {
+        if (current === "login" && sessions.login.pending) {
+          openSheet("sheetPermission");
+          startCountdown();
+        }
+      }, 520);
+    }
+  }
+
+  function goHome() {
+    saveCurrent();
+    closeSheets();
+    closeDrawer();
+    showView("home");
+  }
+
+  /* ---------------- drawer ---------------- */
+
+  function openDrawer() {
+    clearTimeout(drawerTimer);
+    drawerScrim.hidden = false;
+    drawer.hidden = false;
+    requestAnimationFrame(function () {
+      drawer.classList.add("open");
+      drawerScrim.classList.add("show");
+    });
+    applyFilter();
+  }
+
+  function closeDrawer() {
+    if (drawer.hidden) return;
+    drawer.classList.remove("open");
+    drawerScrim.classList.remove("show");
+    clearTimeout(drawerTimer);
+    drawerTimer = setTimeout(function () {
+      drawer.hidden = true;
+      drawerScrim.hidden = true;
+    }, 280);
+  }
+
+  function markRead(id) {
+    var row = drawerList.querySelector('.drawer-session[data-session="' + id + '"]');
+    if (row) {
+      row.dataset.unread = "false";
+      var d = row.querySelector(".unread-dot");
+      if (d) d.hidden = true;
+    }
+    refreshCounts();
+    applyFilter();
+  }
+
+  function refreshCounts() {
+    var rows = $$(".drawer-session", drawerList);
+    var running = 0, waiting = 0, unread = 0;
+    rows.forEach(function (r) {
+      if (r.dataset.state === "running") running++;
+      if (r.dataset.state === "waiting") waiting++;
+      if (r.dataset.unread === "true") unread++;
+    });
+    setChipCount("running", running);
+    setChipCount("waiting", waiting);
+    setChipCount("unread", unread);
+  }
+
+  function setChipCount(filter, n) {
+    var chip = $('.chip[data-filter="' + filter + '"]', $("#filterChips"));
+    if (!chip) return;
+    var el = chip.querySelector(".chip-n");
+    if (!el) {
+      el = document.createElement("span");
+      el.className = "chip-n";
+      chip.appendChild(el);
+    }
+    el.textContent = n;
+    el.hidden = n === 0;
+  }
+
+  function applyFilter() {
+    if (!drawerList) return;
+    var q = (searchInput.value || "").trim().toLowerCase();
+    $$(".drawer-session", drawerList).forEach(function (row) {
+      var show = true;
+      if (currentFilter === "running") show = row.dataset.state === "running";
+      else if (currentFilter === "waiting") show = row.dataset.state === "waiting";
+      else if (currentFilter === "unread") show = row.dataset.unread === "true";
+      if (q && (row.dataset.search || "").toLowerCase().indexOf(q) === -1) show = false;
+      row.hidden = !show;
+    });
+
+    $$(".date-label", drawerList).forEach(function (label) {
+      var any = false;
+      var n = label.nextElementSibling;
+      while (n && !n.classList.contains("date-label")) {
+        if (n.classList.contains("drawer-session") && !n.hidden) any = true;
+        n = n.nextElementSibling;
+      }
+      label.hidden = !any;
+    });
+  }
+
+  function updateHomeStats() {
+    var pending = sessions.login.pending ? 1 : 0;
+    var running = 1 + (sessions.login.allowed ? 1 : 0);
+
+    var pc = $("#permissionCount");
+    var ps = $("#permissionSub");
+    if (pc) { pc.textContent = pending; pc.hidden = pending === 0; }
+    if (ps) ps.textContent = pending ? "Edit · src/db/pool.ts" : "都处理完了";
+
+    var rc = $("#runningCount");
+    if (rc) { rc.textContent = running; rc.hidden = running === 0; }
+  }
+
+  /* ---------------- sheets ---------------- */
+
+  function openSheet(id) {
+    if (activeSheet) {
+      activeSheet.hidden = true;
+      activeSheet.classList.remove("show");
+      activeSheet = null;
+    }
+    var sheet = document.getElementById(id);
+    if (!sheet) return;
+    scrim.hidden = false;
+    sheet.hidden = false;
+    activeSheet = sheet;
+    sheet.setAttribute("tabindex", "-1");
+    requestAnimationFrame(function () {
+      sheet.classList.add("show");
+      sheet.focus({ preventScroll: true });
+    });
+  }
+
+  function closeSheets() {
+    scrim.hidden = true;
+    $$(".sheet").forEach(function (s) {
+      s.hidden = true;
+      s.classList.remove("show");
+    });
+    activeSheet = null;
+  }
+
+  /* ---------------- permission ---------------- */
+
+  function startCountdown() {
+    if (permissionTimer) return;
+    renderCountdown();
+    permissionTimer = setInterval(function () {
+      permissionRemaining -= 1;
+      if (permissionRemaining <= 0) {
+        permissionRemaining = 0;
+        renderCountdown();
+        stopCountdown();
+        resolvePermission("deny", true);
+      } else {
+        renderCountdown();
+      }
+    }, 1000);
+  }
+
+  function stopCountdown() {
+    clearInterval(permissionTimer);
+    permissionTimer = null;
+  }
+
+  function renderCountdown() {
+    var m = Math.floor(permissionRemaining / 60);
+    var s = permissionRemaining % 60;
+    var label = $("#countdown");
+    if (label) label.textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    var fill = $("#countdownFill");
+    if (fill) fill.style.width = Math.max(0, Math.round((permissionRemaining / 300) * 100)) + "%";
+  }
+
+  function resolvePermission(decision, timedOut) {
+    stopCountdown();
+    closeSheets();
+
+    var denied = decision.indexOf("deny") === 0;
+    var labels = {
+      allow_once: "已允许一次",
+      allow_session: "已允许 · 本会话内不再询问",
+      deny: timedOut ? "等待超时，已自动拒绝" : "已拒绝"
+    };
+    var label = labels[decision] || "已处理";
+
+    var banner = $("#pendingBanner");
+    if (banner) banner.remove();
+
+    var row = $("#decisionRow");
+    if (row) {
+      row.hidden = false;
+      row.textContent = label + " · Edit src/db/pool.ts";
+      row.classList.toggle("danger", denied);
+    }
+
+    sessions.login.pending = false;
+    sessions.login.allowed = !denied;
+    sessions.login.chip = denied ? "已停止" : "运行中";
+    sessions.login.chipClass = denied ? "cold" : "run";
+
+    var drawerRow = drawerList.querySelector('.drawer-session[data-session="login"]');
+    if (drawerRow) {
+      drawerRow.dataset.state = denied ? "cold" : "running";
+      var d = drawerRow.querySelector(".ds-dot");
+      if (d) d.className = "ds-dot " + (denied ? "cold" : "running");
+    }
+
+    if (current === "login") {
+      var chip = $("#chatState");
+      chip.textContent = sessions.login.chip;
+      chip.className = "state-chip " + sessions.login.chipClass;
+      $("#runStatus").textContent = denied ? "空闲" : "运行中 · Bash";
+    }
+
+    refreshCounts();
+    applyFilter();
+    updateHomeStats();
+    toast(label);
+
+    if (!denied) {
+      setTimeout(function () {
+        if (current === "login") appendClaude("已把连接池从 5 调到 20，并补了一个并发用例。再跑一遍测试确认。");
+      }, 700);
+    }
+  }
+
+  /* ---------------- streaming ---------------- */
+
+  function appendUser(text) {
+    var el = document.createElement("div");
+    el.className = "msg-user";
+    el.innerHTML = "<p>" + escapeHtml(text) + "</p>";
+    messages.appendChild(el);
+    scrollBottom();
+  }
+
+  function appendSystem(text, danger) {
+    var el = document.createElement("div");
+    el.className = "system-row" + (danger ? " danger" : "");
+    el.textContent = text;
+    messages.appendChild(el);
+    scrollBottom();
+  }
+
+  function finishStream() {
+    setComposerRunning(false);
+    var status = $("#runStatus");
+    if (status) status.textContent = "空闲 · 等待输入";
+    var s = sessions[current];
+    if (s) {
+      var amount = parseFloat(s.cost.slice(1).split(" ")[0]) + 0.03;
+      var rest = s.cost.split("·")[1] || " 0 tokens";
+      s.cost = "$" + amount.toFixed(2) + " ·" + rest;
+      var cost = $("#costLabel");
+      if (cost) cost.textContent = s.cost;
+    }
+  }
+
+  function appendClaude(text) {
+    var wrap = document.createElement("div");
+    wrap.className = "msg-claude";
+    wrap.innerHTML = '<span class="avatar">C</span><div class="msg-body"><p class="stream-text"></p></div>';
+    messages.appendChild(wrap);
+    scrollBottom();
+
+    var p = wrap.querySelector(".stream-text");
+    if (reducedMotion()) {
+      p.textContent = text;
+      finishStream();
+      return;
+    }
+
+    var i = 0;
+    var timer = setInterval(function () {
+      i += 2;
+      p.textContent = text.slice(0, i);
+      scrollBottom();
+      if (i >= text.length) {
+        clearInterval(timer);
+        streamingTimers = streamingTimers.filter(function (t) { return t !== timer; });
+        finishStream();
+      }
+    }, 22);
+    streamingTimers.push(timer);
+  }
+
+  function sendMessage() {
+    var input = $("#composerInput");
+    var text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    appendUser(text);
+    input.value = "";
+    input.style.height = "auto";
+    setComposerRunning(true);
+    $("#runStatus").textContent = "运行中 · Claude";
+    setTimeout(function () {
+      if (!$("#view-chat").hidden) appendClaude("收到。我先检查当前改动和相关测试，然后继续。");
+    }, 420);
+  }
+
+  function stopStreaming() {
+    streamingTimers.forEach(clearInterval);
+    streamingTimers = [];
+    appendSystem("已停止本轮生成", false);
+    setComposerRunning(false);
+    $("#runStatus").textContent = "空闲";
+    toast("已停止");
+  }
+
+  function sendFromHome() {
+    var input = $("#homeInput");
+    var text = input.value.trim();
+    if (!text) { input.focus(); return; }
+
+    sessions.fresh.cwd = sessions.fresh.cwd || "~/code/login-service";
+    sessions.fresh.html = "";
+    sessions.fresh.cost = "$0.00 · 0 tokens";
+    openSession("fresh");
+    addDrawerRow(sessions.fresh.cwd, "new");
+    input.value = "";
+    input.style.height = "auto";
+    appendUser(text);
+    setComposerRunning(true);
+    $("#runStatus").textContent = "运行中 · Claude";
+    setTimeout(function () { appendClaude("收到。我先看一下相关代码和测试，然后继续。"); }, 420);
+  }
+
+  /* ---------------- drawer row for a new chat ---------------- */
+
+  function addDrawerRow(dir, kind) {
+    var existing = drawerList.querySelector('.drawer-session[data-session="fresh"]');
+    if (existing) {
+      existing.dataset.search = "新会话 " + dir;
+      existing.dataset.state = kind === "new" ? "running" : "cold";
+      var meta = existing.querySelector(".ds-meta");
+      if (meta) meta.textContent = dir + " · 等待第一条消息";
+      var dot = existing.querySelector(".ds-dot");
+      if (dot) dot.className = "ds-dot " + (kind === "new" ? "running" : "cold");
+      refreshCounts();
+      applyFilter();
+      return;
+    }
+
+    var row = document.createElement("button");
+    row.type = "button";
+    row.className = "drawer-session";
+    row.dataset.session = "fresh";
+    row.dataset.state = kind === "new" ? "running" : "cold";
+    row.dataset.unread = "false";
+    row.dataset.search = "新会话 " + dir;
+    row.innerHTML =
+      '<div class="ds-row1">' +
+        '<span class="ds-dot ' + (kind === "new" ? "running" : "cold") + '"></span>' +
+        '<span class="ds-title">新会话</span>' +
+        '<span class="ds-time">刚刚</span>' +
+      "</div>" +
+      '<div class="ds-meta">' + escapeHtml(dir) + " · 等待第一条消息</div>";
+
+    var today = drawerList.querySelector(".date-label");
+    if (today && today.nextElementSibling) today.insertAdjacentElement("afterend", row);
+    else drawerList.prepend(row);
+
+    refreshCounts();
+    applyFilter();
+  }
+
+  /* ---------------- events ---------------- */
+
+  document.addEventListener("click", function (e) {
+    var sessionBtn = e.target.closest ? e.target.closest("[data-session]") : null;
+    if (sessionBtn) {
+      openSession(sessionBtn.getAttribute("data-session"));
+      return;
+    }
+
+    var action = e.target.closest ? e.target.closest("[data-action]") : null;
+    if (action) {
+      if (action.getAttribute("data-action") === "permission") openSession("login");
+      else if (action.getAttribute("data-action") === "new") openSheet("sheetNewSession");
+      return;
+    }
+
+    var closeBtn = e.target.closest ? e.target.closest("[data-close]") : null;
+    if (closeBtn) { closeSheets(); return; }
+
+    var demo = e.target.closest ? e.target.closest("[data-demo]") : null;
+    if (demo) {
+      var kind = demo.getAttribute("data-demo");
+      var msgs = {
+        tip: "原型：长按会话可以置顶、改名或归档",
+        more: "原型：批量选择、归档、清空",
+        device: "原型：本机 daemon 在线，3 个活跃会话",
+        attach: "原型：选择图片或文件（真实版会上传到 daemon）",
+        token: "原型：真实版本会调用 daemon 轮换 token",
+        pair: "原型：真实版本会打开扫码页",
+        audit: "原型：审计日志会列出每次权限决策",
+        revoke: "原型：撤销后本机立即断开",
+        params: "原型：完整 JSON 参数与权限来源"
+      };
+      toast(msgs[kind] || "原型演示");
+    }
+  });
+
+  messages.addEventListener("click", function (e) {
+    if (e.target.closest("#openPermission")) {
+      openSheet("sheetPermission");
+      startCountdown();
+      return;
+    }
+    if (e.target.closest("#openQuestion")) {
+      openSheet("sheetQuestion");
+      return;
+    }
+    var head = e.target.closest(".tool-head");
+    if (head) head.closest(".tool").classList.toggle("open");
+  });
+
+  $("#openDrawer").addEventListener("click", openDrawer);
+  $("#drawerScrim").addEventListener("click", closeDrawer);
+  $("#closeDrawer").addEventListener("click", closeDrawer);
+  $("#drawerNewChat").addEventListener("click", function () { openSheet("sheetNewSession"); });
+  $("#drawerSettings").addEventListener("click", function () { closeDrawer(); showView("settings"); });
+  $("#homeNewPill").addEventListener("click", function () { openSheet("sheetNewSession"); });
+  $("#homeAttach").addEventListener("click", function () { openSheet("sheetNewSession"); });
+  $("#seeAll").addEventListener("click", openDrawer);
+
+  $("#homeModeBtn").addEventListener("click", function () {
+    homeMode = homeMode === "Manual" ? "Plan" : "Manual";
+    $("#homeModeLabel").textContent = homeMode;
+    toast("权限模式：" + homeMode);
+  });
+
+  $("#homeScopeBtn").addEventListener("click", function () { toast("作用域：只能修改当前工作区"); });
+  $("#homeBudgetBtn").addEventListener("click", function () { toast("单轮预算上限：$5.00"); });
+
+  $("#homeSend").addEventListener("click", sendFromHome);
+  $("#homeInput").addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 104) + "px";
+  });
+  $("#homeInput").addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); sendFromHome(); }
+  });
+
+  $("#filterChips").addEventListener("click", function (e) {
+    var chip = e.target.closest(".chip");
+    if (!chip) return;
+    $$(".chip", $("#filterChips")).forEach(function (c) { c.classList.remove("active"); });
+    chip.classList.add("active");
+    currentFilter = chip.getAttribute("data-filter");
+    applyFilter();
+  });
+
+  searchInput.addEventListener("input", applyFilter);
+
+  $("#backHome").addEventListener("click", goHome);
+  $("#chatTitleBtn").addEventListener("click", openDrawer);
+  $("#chatMenu").addEventListener("click", function () { toast("原型：中断 / 重命名 / 归档"); });
+  $("#backFromSettings").addEventListener("click", function () { showView("home"); });
+
+  $("#themeQuick").addEventListener("click", function () {
+    setTheme(effectiveDark() ? "light" : "dark");
+  });
+
+  $$("#themeSeg button").forEach(function (b) {
+    b.addEventListener("click", function () { setTheme(b.getAttribute("data-theme-mode")); });
+  });
+
+  $$(".switch").forEach(function (sw) {
+    sw.addEventListener("click", function () {
+      var on = sw.classList.toggle("on");
+      sw.setAttribute("aria-checked", String(on));
+      sw.setAttribute("aria-pressed", String(on));
+    });
+  });
+
+  $$("#modeSeg button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      $$("#modeSeg button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      toast("权限模式：" + b.textContent.trim());
+    });
+  });
+
+  $$("[data-stepper]").forEach(function (st) {
+    var label = st.querySelector("[data-value-label]");
+    var render = function () {
+      var value = Number(st.getAttribute("data-value"));
+      var prefix = st.getAttribute("data-prefix") || "";
+      var suffix = st.getAttribute("data-suffix") || "";
+      var decimals = Number(st.getAttribute("data-decimals") || 0);
+      if (label) label.textContent = prefix + value.toFixed(decimals) + suffix;
+    };
+    $$("button", st).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var step = Number(st.getAttribute("data-step")) * Number(b.getAttribute("data-dir"));
+        var next = Number(st.getAttribute("data-value")) + step;
+        next = Math.max(Number(st.getAttribute("data-min")), Math.min(Number(st.getAttribute("data-max")), next));
+        st.setAttribute("data-value", String(next));
+        render();
+      });
+    });
+    render();
+  });
+
+  $$("[data-decision]").forEach(function (b) {
+    b.addEventListener("click", function () { resolvePermission(b.getAttribute("data-decision"), false); });
+  });
+
+  $$("#questionOptions .option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      $$("#questionOptions .option").forEach(function (x) { x.classList.remove("selected"); });
+      opt.classList.add("selected");
+    });
+  });
+
+  $("#answerQuestion").addEventListener("click", function () {
+    var selected = $("#questionOptions .option.selected");
+    var other = $("#questionOther").value.trim();
+    var answer = other || (selected ? selected.getAttribute("data-value") : "未选择");
+    closeSheets();
+
+    var card = $("#questionCard");
+    if (card) {
+      var row = document.createElement("div");
+      row.className = "system-row";
+      row.textContent = "已回答：" + answer;
+      card.replaceWith(row);
+    }
+
+    toast("回答已发送");
+    setTimeout(function () {
+      if (current === "billing") appendClaude("好，就用" + answer + "。我先把默认值抽到配置里，再补测试。");
+    }, 500);
+  });
+
+  $$("#dirList .dir-option").forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      $$("#dirList .dir-option").forEach(function (x) { x.classList.remove("selected"); });
+      opt.classList.add("selected");
+    });
+  });
+
+  $("#createSession").addEventListener("click", function () {
+    var selected = $("#dirList .dir-option.selected");
+    var dir = selected ? selected.getAttribute("data-dir") : "~/code/login-service";
+    sessions.fresh.cwd = dir;
+    sessions.fresh.html = templates.cold.innerHTML;
+    sessions.fresh.cost = "$0.00 · 0 tokens";
+    closeSheets();
+    addDrawerRow(dir, "cold");
+    openSession("fresh");
+    toast("已创建会话 · " + dir);
+  });
+
+  var composer = $("#composerInput");
+  composer.addEventListener("input", function () {
+    composer.style.height = "auto";
+    composer.style.height = Math.min(composer.scrollHeight, 104) + "px";
+  });
+
+  composer.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if ($("#sendBtn").getAttribute("data-mode") === "stop") stopStreaming();
+      else sendMessage();
+    }
+  });
+
+  $("#sendBtn").addEventListener("click", function () {
+    if ($("#sendBtn").getAttribute("data-mode") === "stop") stopStreaming();
+    else sendMessage();
+  });
+
+  /* ---------------- boot ---------------- */
+
+  function applyHash() {
+    var h = (location.hash || "").replace("#", "");
+    if (h === "dark") { setTheme("dark"); showView("home"); return; }
+    if (h === "light") { setTheme("light"); showView("home"); return; }
+    if (h === "chat") { openSession("login"); setTimeout(closeSheets, 620); return; }
+    if (h === "permission") { openSession("login"); return; }
+    if (h === "question") {
+      openSession("billing");
+      setTimeout(function () { openSheet("sheetQuestion"); }, 460);
+      return;
+    }
+    if (h === "settings") { showView("settings"); return; }
+    if (h === "drawer") { showView("home"); openDrawer(); return; }
+    showView("home");
+  }
+
+  window.addEventListener("hashchange", applyHash);
+
+  setGreeting();
+  refreshCounts();
+  updateHomeStats();
+  renderCountdown();
+  applyHash();
+})();
+</script>
